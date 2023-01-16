@@ -1,5 +1,18 @@
 // Package ctxio contains utility functions for performing input and output
 // operations that can be cancelled via context.
+//
+// This package is mainly useful for copying between *os.Files or net.Conns.
+// If you're copying data using net/http or gRPC or some other library that
+// natively supports cancellation, you might not need this package.
+//
+// Copy is the primary function in this package. Other functions are based on
+// it. Copy reads and writes in parallel, and checks whether the given context
+// is cancelled before each operation. When the context is cancelled, Copy
+// stops pending Read and Write calls by calling the Close method on its
+// src and dst arguments. The arguments must support calls to Close that
+// are concurrent with Read and Write, and Read and Write must return quickly.
+// This is generally file for *os.File and net.Conn, but check your
+// implementation.
 package ctxio
 
 import (
