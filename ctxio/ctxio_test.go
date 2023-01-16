@@ -532,6 +532,17 @@ func TestCopyFromPipe(t *testing.T) {
 	}
 }
 
+func BenchmarkCopy(b *testing.B) {
+	const size = 1 << 20
+	src := bytes.NewBuffer(make([]byte, size))
+	dst := bytes.NewBuffer(make([]byte, size))
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		Copy(context.Background(), nopWriteCloser{dst}, io.NopCloser(src))
+	}
+	b.SetBytes(size)
+}
+
 type mockFile struct {
 	actor    int
 	syn      *syncer
